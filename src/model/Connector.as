@@ -205,23 +205,23 @@ package model
 		{
 			so = SharedObject.getLocal("phone");
 			load();
-			
-			if (!codecs) {
-				if (CONFIG::player11) {
-					codecs = "wideband narrowband pcmu pcma ulaw alaw dtmf h264 flv";
-				}
-				else {
-					codecs = "wideband narrowband ulaw alaw dtmf flv";
-				}
-			}
-			else {
-				if (!CONFIG::player11) {
-					var parts:Array = codecs.split(" ");
-					if (parts.indexOf("pcmu") >= 0 || parts.indexOf("pcma") >= 0 || parts.indexOf("h264") >= 0) {
-						codecs = "wideband narrowband ulaw alaw dtmf flv"; // reset to default
-					}
-				}
-			}
+//			
+//			if (!codecs) {
+//				if (CONFIG::player11) {
+					codecs = "pcma pcmu";
+//				}
+//				else {
+//					codecs = "wideband narrowband ulaw alaw dtmf flv";
+//				}
+//			}
+//			else {
+//				if (!CONFIG::player11) {
+//					var parts:Array = codecs.split(" ");
+//					if (parts.indexOf("pcmu") >= 0 || parts.indexOf("pcma") >= 0 || parts.indexOf("h264") >= 0) {
+//						codecs = "wideband narrowband ulaw alaw dtmf flv"; // reset to default
+//					}
+//				}
+//			}
 		}
 		
 		//--------------------------------------

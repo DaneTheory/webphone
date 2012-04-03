@@ -134,46 +134,46 @@ videos, such that VideoPublish is picture-in-picture inside VideoPlay view.
 			private function startPublish():void
 			{				
 				if (connector != null && connector.publishStream != null) {
-					if (CONFIG::sdk4) {
+				//	if (CONFIG::sdk4) {
 						var mic:Microphone = Microphone.getEnhancedMicrophone(-1);
-					}
-					else {
-						var mic:Microphone = Microphone.getMicrophone(-1);
-					}
+			//		}
+					//else {
+				//		var mic:Microphone = Microphone.getMicrophone(-1);
+				//	}
 					
-					if (connector.selectedAudio == "speex" || connector.selectedAudio == "default") {
-						mic['codec'] = "Speex";
-						mic.rate = 16;
-						mic['framesPerPacket'] = 1;
-						mic['encodeQuality'] = 6;
-					}
-					if (CONFIG::player11) {
+//					if (connector.selectedAudio == "speex" || connector.selectedAudio == "default") {
+//						mic['codec'] = "Speex";
+//						mic.rate = 16;
+//						mic['framesPerPacket'] = 1;
+//						mic['encodeQuality'] = 6;
+//					}
+					///if (CONFIG::player11) {
 						if (connector.selectedAudio == "pcmu" || connector.selectedAudio == "pcma") {
 							mic['codec'] = connector.selectedAudio;
 							mic.rate = 8;
 							mic['framesPerPacket'] = 2;
 						}
-					}
+					//}
 					
-					if (connector.selectedAudio != null) {
+					if (connector.selectedAudio != null) 
 						connector.publishStream.attachAudio(mic);
-					}
 					
-					if (CONFIG::player11) {
-						var s:flash.media.VideoStreamSettings = (connector.selectedVideo == "h264" ? new flash.media.H264VideoStreamSettings(): new flash.media.VideoStreamSettings());
-						s.setMode(240, 180, 12);
-						s.setQuality(0, 80);
-						if (connector.selectedAudio == "h264") {
-							flash.media.H264VideoStreamSettings(s).setProfileLevel(flash.media.H264Profile.BASELINE, flash.media.H264Level.LEVEL_2);
-						}
-						if (connector.selectedAudio != null) {
-							connector.publishStream.videoStreamSettings = s;
-						}
-					}
 					
-					if (connector.selectedAudio != null) {
-						connector.publishStream.attachCamera(Camera.getCamera());
-					}
+//					if (CONFIG::player11) {
+//						var s:flash.media.VideoStreamSettings = (connector.selectedVideo == "h264" ? new flash.media.H264VideoStreamSettings(): new flash.media.VideoStreamSettings());
+//						s.setMode(240, 180, 12);
+//						s.setQuality(0, 80);
+//						if (connector.selectedAudio == "h264") {
+//							flash.media.H264VideoStreamSettings(s).setProfileLevel(flash.media.H264Profile.BASELINE, flash.media.H264Level.LEVEL_2);
+//						}
+//						if (connector.selectedAudio != null) {
+//							connector.publishStream.videoStreamSettings = s;
+//						}
+//					}
+//					
+//					if (connector.selectedAudio != null) {
+//						connector.publishStream.attachCamera(Camera.getCamera());
+//					}
 				}
 			}
 			
