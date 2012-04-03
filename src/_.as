@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, Mamta Singh. See README for details. */
+
 package {
 	import mx.resources.ResourceManager;
 	import mx.resources.Locale;

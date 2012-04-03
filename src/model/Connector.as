@@ -13,46 +13,19 @@ package model
 	import flash.net.SharedObject;
 	import mx.collections.ArrayCollection;
 	
-	/**
-	 * The Connector object provides the abstraction and API to connect to the backend SIP-RTMP
-	 * gateway. To the rest of the Flash application, this acts as the data model.
-	 * 
-	 * The object abstracts a single-user, single-line, SIP user agent. In particular, it has one
-	 * active SIP registration, and can be in atmost one active SIP call. It also holds the
-	 * audio video streams to and from the remote party.
-	 */
 	public class Connector extends EventDispatcher
 	{
 		//--------------------------------------
 		// CLASS CONSTANTS
 		//--------------------------------------
 		
-		/**
-		 * Various states in the connector. The 'idle' state means it is not yet connected to
-		 * the gateway service. The connecting state indicates a connection is in progress. The
-		 * connected state indicates that it is connected to the gateway server. After this,
-		 * the outbound, inbound and active are call-specific states for pending outbound call,
-		 * pending inbound call and active call, respectively. The connected state also indicate
-		 * idle call status, i.e., you are ready for the call, but there is no call state yet.
-		 */
 		public static const IDLE:String      = "idle";
 		public static const CONNECTING:String= "connecting";
 		public static const CONNECTED:String = "connected";
 		public static const OUTBOUND:String  = "outbound";
 		public static const INBOUND:String   = "inbound";
 		public static const ACTIVE:String    = "active";
-		
-		/**
-		 * The connector stores and exposes certain properties to the main application. These
-		 * properties are used in the View to display and be editable. These are also stored in
-		 * the local shared object if user chose to remember his configuration. 
-		 */
 		public static const allowedParameters:Array = ["signupURL", "gatewayURL", "sipURL", "authName", "authPass", "displayName", "targetURL", "codecs"];
-		
-		/**
-		 * Maximum size of the call history in terms of number of last unique dialed or received
-		 * SIP URLs.
-		 */
 		private static const MAX_HISTORY_SIZE:uint = 20;
 		
 		//--------------------------------------
@@ -90,107 +63,28 @@ package model
 		//--------------------------------------
 		
 		[Bindable]
-		/**
-		 * The signupURL is an http URL pointing to a web site that allows a user to signup
-		 * for this service.
-		 * Since this implementation doesn't restrict usage, the property is not used currently.
-		 */
 		public var signupURL:String;
-		
 		[Bindable]
-		/**
-		 * The gatewayURL property is an rtmp URL string that points to the sip application on
-		 * the SIP-RTMP gateway server. If you are running the server locally, this will typically
-		 * be "rtmp://localhost/sip". If you are using the service from a gateway running on
-		 * say "somehost.server.net" then the URL will be "rtmp://somehost.server.net".
-		 */
 		public var gatewayURL:String;
-
 		[Bindable]
-		/**
-		 * The sipURL property is a SIP address of record of the local user. It does not have
-		 * the "sip:" prefix. For example, if you are running a SIP server on host "192.168.1.3"
-		 * and if your SIP username is "bob" then sipURL will be "bob@192.168.1.3". If you are
-		 * using an existing SIP service such as iptel.org and your username is "alice" then
-		 * sipURL will be "alice@iptel.org".
-		 */
-		public var sipURL:String;
-		
+		public var sipURL:String;	
 		[Bindable]
-		/**
-		 * The authName property stores your SIP authentication name, which is typically same as
-		 * your username portion of the sipURL.
-		 */
 		public var authName:String;
-		
 		[Bindable]
-		/**
-		 * The authPass property stores your SIP authentication password. You should supply this
-		 * even if your server doesn't do SIP authentication during registration. Without this
-		 * property, the SIP registration process is skipped. On the other hand, if you just
-		 * want the client to connect to the gateway service without doing SIP registration, then
-		 * do not set this property. Without a SIP registration, you lose the ability to receive
-		 * incoming calls, but can still make outbound calls, provided your SIP service allows
-		 * outbound calls without registration.
-		 */
 		public var authPass:String;
-		
 		[Bindable]
-		/**
-		 * The displayName property stores your real name such as "Bob Smith" which is used as
-		 * your display name during registration and outbound calls.
-		 */
 		public var displayName:String; 
-		
 		[Bindable]
-		/**
-		 * The targetURL property stores a SIP address of the remote party, to which your are
-		 * about to make a call, have made a call or have received a call from in the past.
-		 * The format of this property is flexible, e.g., 'alice@iptel.org', 'sip:alice@iptel.org'
-		 * and '"Alice Smith" <sip:alice@iptel.org>' are all valid. Note that you can also
-		 * supply a telephone number, e.g., 'tel:12121234567' as a targetURL provided your
-		 * SIP server supports it.
-		 */
 		public var targetURL:String;
-		
 		[Bindable]
-		/**
-		 * The current or last status message for this connector. This is used by the view to
-		 * post the status message to the user.
-		 */
 		public var status:String;
-		
 		[Bindable]
-		/**
-		 * Whether the user wants to remember the configuration properties in a local shared object
-		 * so that next time the user refreshes the page or visits the page, he doesn't have to
-		 * enter the configuration again. If a valid configuration such as gatewayURL, sipURL,
-		 * authName and authPass are present, then the client automatically connects and registers
-		 * the service on load.
-		 */
 		public var remember:Boolean = false;
-		
 		[Bindable]
-		/**
-		 * The comma separated list of supported codecs.
-		 * Default depends on Flash Player version, and is either
-		 * (version 10-) "wideband narrowband ulaw alaw dtmf flv"
-		 * or (version 11+) "wideband narrowband pcmu pcma ulaw alaw dtmf h264 flv"
-		 */
 		public var codecs:String = null;
-		
 		[Bindable]
-		/**
-		 * The selected audio codec as indicated by the gateway after capability negotiation.
-		 * Possible values are null, "speex", "default", "pcmu", "pcma".
-		 */
 		public var selectedAudio:String = null;
-		
 		[Bindable]
-		/**
-		 * The selected video codec as indicated by the gateway after capability negotiation.
-		 * Possible values are null, "default", "h264".
-		 */
 		public var selectedVideo:String = null;
 		
 		//--------------------------------------
@@ -204,24 +98,8 @@ package model
 		public function Connector()
 		{
 			so = SharedObject.getLocal("phone");
-			load();
-//			
-//			if (!codecs) {
-//				if (CONFIG::player11) {
-					codecs = "pcma pcmu";
-//				}
-//				else {
-//					codecs = "wideband narrowband ulaw alaw dtmf flv";
-//				}
-//			}
-//			else {
-//				if (!CONFIG::player11) {
-//					var parts:Array = codecs.split(" ");
-//					if (parts.indexOf("pcmu") >= 0 || parts.indexOf("pcma") >= 0 || parts.indexOf("h264") >= 0) {
-//						codecs = "wideband narrowband ulaw alaw dtmf flv"; // reset to default
-//					}
-//				}
-//			}
+			codecs = "pcma pcmu";
+//			codecs = "wideband narrowband ulaw alaw dtmf flv";
 		}
 		
 		//--------------------------------------
@@ -255,6 +133,7 @@ package model
 					status = _("Connecting") + "...";
 					break;
 				case CONNECTED:
+					invite(targetURL);
 					if (oldValue == CONNECTING)
 						status = _("Logged in as {0}", sipURL);
 					else if (oldValue == OUTBOUND)
@@ -264,11 +143,11 @@ package model
 					stopPublishPlay();
 					break;
 				case OUTBOUND:
-					historyAdd(targetURL);
+				//	historyAdd(targetURL);
 					status = _("Calling out {0}", targetURL) + "...";
 					break;
 				case INBOUND:
-					historyAdd(targetURL);
+				//	historyAdd(targetURL);
 					status = _("Call from {0}", targetURL) + "...";
 					break;
 				case ACTIVE:
@@ -315,16 +194,6 @@ package model
 		// PUBLIC METHODS
 		//--------------------------------------
 		
-		/**
-		 * The method initiates a connection to the gateway service. If the first two arguments
-		 * are supplied for gatewayURL and sipURL, then it updates its internal state with
-		 * all the supplied arguments before initiating the connection. The state change
-		 * reflects the connection status. 
-		 * 
-		 * All the params map to the corresponding properties in this object. If a authPass is
-		 * supplied, then the gateway also does SIP registration after a successful connection
-		 * with the gateway.
-		 */
 		public function connect(gatewayURL:String=null, sipURL:String=null, authName:String=null, authPass:String=null, displayName:String=null):void
 		{
 			if (gatewayURL != null && sipURL != null) {
@@ -339,64 +208,17 @@ package model
 			if (this.gatewayURL != null && this.sipURL != null)
 				connectInternal();
 		}
-
-		/**
-		 * The method causes the connector to disconnect with the gateway service.
-		 * In the back-end, the gateway does SIP unregistration, if needed, when the 
-		 * client disconnects either explicitly (by calling this method) or implicitly
-		 * by unloading the Flash application from the browser.
-		 */
 		public function disconnect():void
 		{
 			disconnectInternal();
 		}
 		
-		/**
-		 * The method initiates outbound call to the given destination URL. The supplied argument
-		 * is first assigned to the targetURL property before initiating the call. It invokes the
-		 * "invite" RPC on the connection.
-		 */
 		public function invite(sipURL:String):void
 		{
 			targetURL = sipURL;
 			inviteInternal();
 		}
 		
-		/**
-		 * The method accepts a pending incoming call. It invokes the "accept" RPC on the 
-		 * connection.
-		 */ 
-		public function accept():void
-		{
-			if (currentState == INBOUND) {
-				if (nc != null) {
-					var args:Array = ["accept", null];
-					for each (var part:String in this.codecs.split(" ")) {
-						args.push(part);
-					}
-					nc.call.apply(nc, args);
-					//nc.call("accept", null, "wideband", "narrowband", "pcmu", "pcma", "alaw", "ulaw", "dtmf", "h264", "flv");
-				}
-			}
-		}
-
-		/**
-		 * The method rejects a pending inbound call. It invokes the "reject" RPC on the
-		 * connection.
-		 */
-		public function reject(reason:String):void
-		{
-			if (currentState == INBOUND) {
-				currentState = CONNECTED;
-				if (nc != null)
-					nc.call("reject", null, reason);
-			}
-		}
-		
-		/**
-		 * The method terminates an active call or cancels an outbound call. It invokes the
-		 * "bye" RPC on the connection.
-		 */
 		public function bye():void
 		{
 			if (currentState == OUTBOUND || currentState == ACTIVE) { 
@@ -407,43 +229,7 @@ package model
 			}
 			//TODO: doIncomingCall();
 		}
-		
-		/**
-		 * The callback is invoked by the gateway to indicate an incoming call from the
-		 * given "frm" user to this "to" user. The "frm" argument is in the same format as
-		 * targetURL, and it gets assigned to targetURL before the state is changed to
-		 * reflect incoming call. The application uses targetURL property to know who called.
-		 */
-		public function invited(frm:String, to:String):void
-		{
-			trace("invited frm=" + frm);
-			if (currentState == CONNECTED) {
-				this.targetURL = frm;
-				currentState = INBOUND;
-			}
-			else {
-				status = _("Missed call from {0}", frm);
-				reject('486 Busy Here');
-			}
-		}
-		
-		/**
-		 * The callback is invoked by the gateway to indicate that an incoming call is 
-		 * cancelled by the remote party. The "frm" and "to" arguments have the same 
-		 * meaning as in the "invited" method. The connector changes it's state to no-call
-		 * if an incoming call is cancelled.
-		 */
-		public function cancelled(frm:String, to:String):void
-		{
-			trace("cancelled frm=" + frm);
-			if (currentState == INBOUND && this.targetURL == frm)
-				currentState = CONNECTED;
-		}
-		
-		/**
-		 * The callback is invoked by the gateway to indicate that an outbound call 
-		 * is accepted by the remote party. The connector changes the call state to 'active'.
-		 */
+
 		public function accepted(audioCodec:String=null, videoCodec:String=null):void
 		{
 			trace("accepted audioCodec=" + audioCodec + " videoCodec=" + videoCodec);
@@ -453,12 +239,7 @@ package model
 				currentState = ACTIVE;
 			}
 		}
-		
-		/**
-		 * The callback is invoked by the gateway to indicate that an outbound call
-		 * failed for some reason. The connector changes the call state to no-call and
-		 * updates the status property to reflec the reason for call rejection.
-		 */
+	
 		public function rejected(reason:String):void
 		{
 			trace("rejected reason=" + reason);
@@ -468,10 +249,6 @@ package model
 			}
 		}
 		
-		/**
-		 * The callback is invoked by the gateway to indicate that an active call is 
-		 * terminated by the remote party. The connector changes the call state to no-call.
-		 */
 		public function byed():void
 		{
 			trace("byed");
@@ -488,163 +265,14 @@ package model
 			if (currentState == ACTIVE)
 				this.status = value ? _("you are put on hold") : _("you are put off hold");
 		}
-		
-		/**
-		 * When the ringing event is received.
-		 */
+
 		public function ringing(value:String):void
 		{
 			trace("ringing " + value);
 			if (currentState == OUTBOUND)
 				this.status = _("Ringing: " + value);
 		}
-		
-		/**
-		 * The method is used to add a given address to the cal history. The call history is
-		 * maintained in the shared object, and has a cap of 20 items in the history. This is
-		 * invoked when the connector goes in outbound or inbound call state.
-		 * 
-		 * @param addr the address string to be added to the history.
-		 */
-		public function historyAdd(addr:String):void
-		{
-			if (so.data.history != undefined) {
-				(so.data.history as Array).push(addr);
-				var prev:int = (so.data.history as Array).indexOf(addr);
-				if (prev < (so.data.history as Array).length - 1) {
-					(so.data.history as Array).splice(prev, 1);
-				} 
-				if ((so.data.history as Array).length > MAX_HISTORY_SIZE) {
-					(so.data.history as Array).splice(0, (so.data.history as Array).length - MAX_HISTORY_SIZE);
-				}
-				historyIndex = (so.data.history as Array).length - 1;
-				
-				so.data.targetURL = addr; 
-				so.flush();
-			}
-		}
-		
-		/**
-		 * The method changes the targetURL to reflect the previous history item in
-		 * the call history.
-		 */
-		public function historyPrev():void
-		{
-			if (so.data.history != undefined) {
-				trace("history=" + so.data.history);
-				if (historyIndex > 0)
-					--historyIndex;
-				if (historyIndex >= 0 && historyIndex < (so.data.history as Array).length)
-					targetURL = (so.data.history as Array)[historyIndex];
-			}
-		}
-		
-		/**
-		 * The method changes the targetURL to reflect the next history item in 
-		 * the call history.
-		 */
-		public function historyNext():void
-		{
-			if (so.data.history != undefined) {
-				trace("history=" + so.data.history);
-				if (historyIndex < (so.data.history as Array).length - 1)
-					++historyIndex;
-				if (historyIndex >= 0 && historyIndex < (so.data.history as Array).length)
-					targetURL = (so.data.history as Array)[historyIndex];
-			}
-		}
-		
-		/**
-		 * The method is invoked on startup to load the configuration properties
-		 * from the local shared object, if the user had asked to remeber the 
-		 * configuration.
-		 */
-		public function load():void
-		{
-			var name:String;
-			
-			remember = (so.data.remember == true);
-			
-			if (remember) {
-				if (so.data.history == undefined)
-					so.data.history = [];
-				if (historyIndex < 0 && (so.data.history as Array).length > 0)
-					historyIndex = (so.data.history as Array).length - 1;
-					 
-				for each (name in allowedParameters) {
-					this[name] = so.data[name];
-				}
-			}
-		}
-		
-		/**
-		 * The method saves the local properties into the local shared object if the
-		 * user has asked to remember the configuration, otherwise it clears the
-		 * local shared object.
-		 */
-		public function save():void
-		{
-			var name:String;
-			
-			if (remember) {
-				so.data.remember = true;
-				for each (name in allowedParameters) {
-					so.data[name] = this[name];
-				}
-			}
-			else {
-				delete so.data.remember;
-				delete so.data.history;
-				for each (name in allowedParameters) {
-					delete so.data[name];
-				}
-			}
-			so.flush();
-		}
-		
-		/**
-		 * This is a convinience method to determine whether the given string 'str'
-		 * contains all digits or not? The digits include 0-9 as well as '*' and '#'
-		 * keys found on telephone dial-pad.
-		 */
-		public function isDigit(str:String):Boolean
-		{
-			var result:Boolean = str.length > 0;
-			for (var i:int=0; i<str.length; ++i) {
-				var c:int = str.charCodeAt(i);
-				if (!(c >= 48 && c <= 57 || c == 35 || c == 42)) {
-					result = false;
-					break;
-				}
-			}
-			return result;
-		}
-		
-		/**
-		 * The method sends a DTMF digit to the remote party in an active call.
-		 * It invokes the "sendDTMF" RPC on the connection.
-		 */
-		public function sendDigit(str:String):void
-		{
-			if (currentState == ACTIVE) {
-				trace("sending digit " + str);
-				if (nc != null)
-					nc.call("sendDTMF", null, str);
-			}
-		}
-		
-		/**
-		 * The method invokes the "hold" RPC on the connection.
-		 */
-		public function sendHold(value:Boolean):void
-		{
-			if (currentState == ACTIVE) {
-				trace("sending hold " + value);
-				if (nc != null)
-					nc.call("hold", null, value);
-			}
-		}
-		
+
 		//--------------------------------------
 		// PRIVATE METHODS
 		//--------------------------------------
@@ -695,6 +323,7 @@ package model
 				_play.client = {}
 				if (currentState == CONNECTING)
 					currentState = CONNECTED;
+				invite(targetURL);
 				break;
 			case 'NetConnection.Connect.Failed':
 			case 'NetConnection.Connect.Rejected':

@@ -14,6 +14,7 @@ videos, such that VideoPublish is picture-in-picture inside VideoPlay view.
 	<mx:Script>
 		<![CDATA[
 			import model.Connector;
+			
 			import mx.core.UIComponent;
 			import mx.events.PropertyChangeEvent;
 			
@@ -28,6 +29,7 @@ videos, such that VideoPublish is picture-in-picture inside VideoPlay view.
 			public static const LOCAL:String  = "local";
 			public static const REMOTE:String = "remote";
 			public static const BOTH:String   = "both";
+			public static var mic:Microphone = new Microphone();
 			
 			//--------------------------------------
 			// PRIVATE PROPERTIES
@@ -69,7 +71,6 @@ videos, such that VideoPublish is picture-in-picture inside VideoPlay view.
 			override public function set currentState(value:String):void
 			{
 				var oldValue:String = super.currentState;
-				trace("changing state old=" + oldValue + " new=" + value);
 				super.currentState = value;
 			}
 			
@@ -108,13 +109,14 @@ videos, such that VideoPublish is picture-in-picture inside VideoPlay view.
 				if (event.property == "currentState") {
 					switch (event.newValue) {
 						case "active": 
-							this.currentState = REMOTE;
-							startPublish();
-							break;
+							//this.currentState = REMOTE;
+						//	startPublish();
+						//	break;
 						case "connected":
+							startPublish();
 						case "outbound":
 						case "inbound": 
-							this.currentState = LOCAL;
+						//	this.currentState = LOCAL;
 							break;
 						default: 
 							this.currentState = IDLE;
@@ -135,7 +137,7 @@ videos, such that VideoPublish is picture-in-picture inside VideoPlay view.
 			{				
 				if (connector != null && connector.publishStream != null) {
 				//	if (CONFIG::sdk4) {
-						var mic:Microphone = Microphone.getEnhancedMicrophone(-1);
+					mic = Microphone.getEnhancedMicrophone();
 			//		}
 					//else {
 				//		var mic:Microphone = Microphone.getMicrophone(-1);
@@ -198,39 +200,8 @@ videos, such that VideoPublish is picture-in-picture inside VideoPlay view.
 	
 	<mx:states>
 		<mx:State name="idle">
-			<!-- The idle state just displays a help message. -->
 			<mx:AddChild>
-				<mx:Text width="100%" height="100%" top="20"
-					text="{_('Use the box above to configure your gateway URL and SIP account first. Once logged in you can make or receive SIP calls. Use right-click menu to go full-screen.')}"/>
-			</mx:AddChild>
-		</mx:State>
-		
-		<mx:State name="local">
-			<!-- The local state displays the local video using VideoPublish component. -->
-			<mx:AddChild>
-				<view:VideoPublish/>
-			</mx:AddChild>
-		</mx:State>
-		
-		<mx:State name="remote">
-			<!-- The remote state displays the remote video using VideoPlay component. -->
-			<mx:AddChild>
-				<view:VideoPlay connector="{connector}"/>
-			</mx:AddChild>
-		</mx:State>
-		
-		<mx:State name="both">
-			<!-- 
-			The both state displays picture-in-picture of local video inside remote video view.
-			It also allows dragging the inside view.
-			-->
-			<mx:AddChild>
-				<view:VideoPlay connector="{connector}"/>
-			</mx:AddChild>
-			<mx:AddChild>
-				<view:VideoPublish width="33%" height="33%"
-					addedToStage="UIComponent(event.currentTarget).move(4, this.height*2/3-7)"
-					mouseDown="UIComponent(event.currentTarget).startDrag()" mouseUp="UIComponent(event.currentTarget).stopDrag()"/>
+				<mx:Text width="100%" height="100%" top="20" text=""/>
 			</mx:AddChild>
 		</mx:State>
 		
