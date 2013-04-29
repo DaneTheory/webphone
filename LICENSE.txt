@@ -1,0 +1,3 @@
+GNU GPL v3
+
+Read more http://www.gnu.org/licenses/gpl.html
